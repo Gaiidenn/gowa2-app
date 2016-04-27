@@ -34,9 +34,18 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+
+	// Initialize websocket hub
 	go h.run()
+
+	// Initialize DataBase
+	initDB()
+
+	// Define requests handlers
 	http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/ws", serveWs)
+
+	// Start server
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

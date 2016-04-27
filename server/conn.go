@@ -56,6 +56,7 @@ func (c *connection) readPump() {
 			}
 			break
 		}
+		log.Println("Message received from client : ", string(message))
 		h.broadcast <- message
 	}
 }

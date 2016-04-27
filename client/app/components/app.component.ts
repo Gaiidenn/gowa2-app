@@ -34,7 +34,7 @@ export class AppComponent{
     constructor(
         private _router: Router
     ) {
-        this._ws = new $WebSocket("ws://172.16.0.193:8080/ws");
+        this._ws = new $WebSocket("ws://localhost:8080/ws");
 
         let cb = function(message: any) {
             if (message.data.length > 0) {
