@@ -1,0 +1,52 @@
+import {Component} from 'angular2/core';
+import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from 'angular2/router';
+import {$WebSocket} from 'angular2-websocket/angular2-websocket';
+import {DashboardComponent} from '../components/dashboard/dashboard.component';
+import {TodoComponent} from '../components/todo/todo.component';
+
+@Component({
+    selector: 'my-app',
+    templateUrl: 'app/components/app.component.html',
+    directives: [
+        ROUTER_DIRECTIVES
+    ],
+    providers: [
+        ROUTER_PROVIDERS
+    ]
+})
+@RouteConfig([
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: DashboardComponent,
+        useAsDefault: true
+    },
+    {
+        path: '/todo',
+        name: 'Todo',
+        component: TodoComponent
+    }
+])
+export class AppComponent{
+    title = 'My GoWA2 APP !!';
+    private _ws: $WebSocket;
+
+    constructor(
+        private _router: Router
+    ) {
+        this._ws = new $WebSocket("ws://172.16.0.193:8080/ws");
+
+        let cb = function(message: any) {
+            if (message.data.length > 0) {
+                alert(message.data);
+            }
+        }
+        this._ws.onMessage(cb, null);
+    }
+
+    sendMessage(message: string) {
+        if (message.length > 0) {
+            this._ws.send(message);
+        }
+    }
+}
