@@ -8,19 +8,21 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"golang.org/x/net/websocket"
 	"os"
 	"strings"
 	"text/template"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
+var clientDir = flag.String("clientDir", "/../client", "client app directory")
 var homeTempl = template.Must(template.ParseFiles("../client/index.html"))
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 
 	if validFileRequest(r.URL.Path) {
 		pwd, _ := os.Getwd()
-		filePath := pwd + "/../client" + r.URL.Path
+		filePath := pwd + *clientDir + r.URL.Path
 		http.ServeFile(w, r, filePath)
 		return
 	}
@@ -42,8 +44,9 @@ func main() {
 	initDB()
 
 	// Define requests handlers
+	http.Handle("/jsonrpc", websocket.Handler(jsonrpcHandler))
+	http.Handle("/push", websocket.Handler(pushHandler))
 	http.HandleFunc("/", serveIndex)
-	http.HandleFunc("/ws", serveWs)
 
 	// Start server
 	err := http.ListenAndServe(*addr, nil)

@@ -5,13 +5,30 @@
 package main
 
 import (
+	//"log"
+	//"net/http"
+	"golang.org/x/net/websocket"
+	"net/rpc"
+	"net/rpc/jsonrpc"
 	"log"
-	"net/http"
-	"time"
-
-	"github.com/gorilla/websocket"
+	//"time"
 )
 
+func jsonrpcHandler(ws *websocket.Conn) {
+	jsonrpc.ServeConn(ws)
+}
+
+func pushHandler(ws *websocket.Conn) {
+	c := jsonrpc.NewClient(ws)
+
+	err := c.Call("Class.Method", nil, nil)
+	if err != nil {
+		log.Print("Class.Method :", err)
+		return
+	}
+	log.Print(c)
+}
+/*
 const (
 	// Time allowed to write a message to the peer.
 	writeWait = 10 * time.Second
@@ -30,25 +47,28 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
-
+*/
 // connection is an middleman between the websocket connection and the hub.
 type connection struct {
 	// The websocket connection.
 	ws *websocket.Conn
 
+	// The rpc client
+	rc *rpc.Client
+
 	// Buffered channel of outbound messages.
 	send chan []byte
 }
-
+/*
 // readPump pumps messages from the websocket connection to the hub.
 func (c *connection) readPump() {
 	defer func() {
 		h.unregister <- c
 		c.ws.Close()
 	}()
-	c.ws.SetReadLimit(maxMessageSize)
+	//c.ws.SetReadLimit(maxMessageSize)
 	c.ws.SetReadDeadline(time.Now().Add(pongWait))
-	c.ws.SetPongHandler(func(string) error { c.ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	//c.ws.SetPongHandler(func(string) error { c.ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
@@ -70,22 +90,23 @@ func (c *connection) write(mt int, payload []byte) error {
 
 // writePump pumps messages from the hub to the websocket connection.
 func (c *connection) writePump() {
-	ticker := time.NewTicker(pingPeriod)
+	//ticker := time.NewTicker(pingPeriod)
 	defer func() {
-		ticker.Stop()
+		//ticker.Stop()
 		c.ws.Close()
 	}()
 	for {
 		select {
 		case message, ok := <-c.send:
 			if !ok {
-				c.write(websocket.CloseMessage, []byte{})
+				//c.write(websocket.CloseMessage, []byte{})
 				return
 			}
-			if err := c.write(websocket.TextMessage, message); err != nil {
+			//if err := c.write(websocket.TextMessage, message); err != nil {
+			if err := websocket.Message.Send(c.ws, message); err != nil {
 				return
 			}
-		case <-ticker.C:
+		/*case <-ticker.C:
 			if err := c.write(websocket.PingMessage, []byte{}); err != nil {
 				return
 			}
@@ -94,14 +115,19 @@ func (c *connection) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
+//func serveWs(w http.ResponseWriter, r *http.Request) {
+func serveWs(ws *websocket.Conn) {
+
+	rc := jsonrpc.NewClient(ws)
+	c := &connection{
+		send: make(chan []byte, 256),
+		ws: ws,
+		rc: rc,
 	}
-	c := &connection{send: make(chan []byte, 256), ws: ws}
 	h.register <- c
+
 	go c.writePump()
-	c.readPump()
+	jsonrpc.ServeConn(c.ws)
+	//c.readPump()
 }
+*/

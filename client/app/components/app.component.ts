@@ -34,7 +34,7 @@ export class AppComponent{
     constructor(
         private _router: Router
     ) {
-        this._ws = new $WebSocket("ws://localhost:8080/ws");
+        this._ws = new $WebSocket("ws://localhost:8080/jsonrpc");
 
         let cb = function(message: any) {
             if (message.data.length > 0) {
@@ -46,7 +46,12 @@ export class AppComponent{
 
     sendMessage(message: string) {
         if (message.length > 0) {
-            this._ws.send(message);
+            let rpcRequest = {
+                "jsonrpc": "2.0",
+                "method": "prout",
+                "id": 1
+            }
+            this._ws.send(JSON.stringify(rpcRequest));
         }
     }
 }
