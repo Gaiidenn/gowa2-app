@@ -15,14 +15,36 @@ export class jsonrpcService{
             addr: addr,
             ws: new $WebSocket(addr),
         };
-        this.client.ws.onMessage(this.onClientMessage, null);
+        this.client.ws.onMessage(this.onClientMessage.bind(this), null);
         return this.client;
     }
 
-    onClientMessage(message: any) {
-        if (message.data.length > 0) {
-            alert(message.data);
+    Call(method: string, params: any) {
+        var data: string;
+        var dataObj: rpcRequest;
+
+        while (this.client.request[this.client.i] != null) {
+            this.client.i++;
+
+            if (this.client.i >= this.client.maxRequest) {
+                this.client.i = 0;
+            }
         }
+
+        dataObj = {
+            id: this.client.i,
+            method: method,
+            params: [params]
+        };
+        this.client.request[this.client.i] = dataObj;
+        data = JSON.stringify(dataObj);
+        this.client.ws.send(data);
+    }
+
+    onClientMessage(message: any) {
+        var data = JSON.parse(message.data);
+        console.log(data.result);
+        this.client.request[data.id] = null;
     }
 
     newServer(addr: string) {
@@ -33,6 +55,12 @@ export class jsonrpcService{
         };
         return this.server;
     }
+}
+
+interface rpcRequest {
+    id: number;
+    method: string;
+    params?: any;
 }
 
 interface jsonrpcClient {

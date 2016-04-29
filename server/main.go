@@ -84,9 +84,8 @@ func initRPCRegistration() {
 	rpc.Register(msg)
 }
 
-// Msg struct
-type Msg struct {
-}
+// Msg type
+type Msg string
 
 // Echo just response with the same msg as received
 func (msg *Msg) Echo(str string, reply *string) error {

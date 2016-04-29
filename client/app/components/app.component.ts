@@ -2,6 +2,7 @@ import {Component} from 'angular2/core';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from 'angular2/router';
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
 import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
+import {Observable} from 'rxjs/Rx';
 import {DashboardComponent} from '../components/dashboard/dashboard.component';
 import {TodoComponent} from '../components/todo/todo.component';
 
@@ -12,7 +13,8 @@ import {TodoComponent} from '../components/todo/todo.component';
         ROUTER_DIRECTIVES
     ],
     providers: [
-        ROUTER_PROVIDERS
+        ROUTER_PROVIDERS,
+        jsonrpcService
     ]
 })
 @RouteConfig([
@@ -30,32 +32,24 @@ import {TodoComponent} from '../components/todo/todo.component';
 ])
 export class AppComponent{
     title = 'My GoWA2 APP !!';
-    //private _ws: $WebSocket;
-    private _rpc: jsonrpcService;
 
     constructor(
-        private _router: Router
+        private _router: Router,
+        private _rpc: jsonrpcService
     ) {
         this._rpc.newClient("ws://localhost:8080/jsonrpc");
-        /*this._ws = new $WebSocket("ws://localhost:8080/jsonrpc");
-
-        let cb = function(message: any) {
-            if (message.data.length > 0) {
-                alert(message.data);
-            }
-        }
-        this._ws.onMessage(cb, null);*/
+        this._rpc.newServer("ws://localhost:8080/push");
     }
 
-    sendMessage(message: string) {
-        /*if (message.length > 0) {
-            let rpcRequest = {
-                "jsonrpc": "2.0",
-                "method": "Msg.Echo",
-                "params": [message],
-                "id": 1
-            }
-            this._ws.send(JSON.stringify(rpcRequest));
-        }*/
+    sendMessage(message: string, i: number = 1) {
+        let j = ((10*i) + (100 * i / 5)) / 5;
+        this._rpc.Call("Msg.Echo", "message " + j + " : " + message);
+        i++;
+        if (i <= 50) {
+            let timer = Observable.timer(100);
+            timer.subscribe(() => {
+                this.sendMessage(message, i);
+            })
+        }
     }
 }
