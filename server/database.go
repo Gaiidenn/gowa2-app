@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	ara "github.com/diegogub/aranGO"
 )
 
@@ -23,4 +24,28 @@ func initDB() {
 		log.Println("DataBase successfully created")
 	}
 	db = s.DB("test")
+
+	initCollections()
+}
+
+func initCollections() {
+	cols := []string{
+		"users",
+		"docs",
+	}
+
+	for _, col := range cols {
+		createCollection(col)
+	}
+}
+
+func createCollection(colName string) {
+	// Try to create the collection
+	if db.ColExist(colName) {
+		log.Println("Collection", colName, "already exists")
+		return
+	}
+	col := ara.NewCollectionOptions(colName, true)
+	db.CreateCollection(col)
+	log.Println("Collection", colName, "successfully created")
 }

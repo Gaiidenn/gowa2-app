@@ -8,10 +8,12 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"golang.org/x/net/websocket"
+	"net/rpc"
 	"os"
 	"strings"
 	"text/template"
+
+	"golang.org/x/net/websocket"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
@@ -43,6 +45,9 @@ func main() {
 	// Initialize DataBase
 	initDB()
 
+	// Register rpc methods
+	initRPCRegistration()
+
 	// Define requests handlers
 	http.Handle("/jsonrpc", websocket.Handler(jsonrpcHandler))
 	http.Handle("/push", websocket.Handler(pushHandler))
@@ -72,4 +77,20 @@ func validFileRequest(path string) bool {
 	}
 
 	return false
+}
+
+func initRPCRegistration() {
+	msg := new(Msg)
+	rpc.Register(msg)
+}
+
+// Msg struct
+type Msg struct {
+}
+
+// Echo just response with the same msg as received
+func (msg *Msg) Echo(str string, reply *string) error {
+	log.Println("Msg.Echo(", str, ")")
+	*reply = str
+	return nil
 }
