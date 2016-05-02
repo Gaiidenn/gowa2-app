@@ -22,7 +22,7 @@ export class jsonrpcService{
         return this.client;
     }
 
-    Call(method: string, params: any): void {
+    Call(method: string, params: any, callback?: Function): void {
         var data: string;
         var dataObj: jsonrpcRequest;
 
@@ -39,14 +39,21 @@ export class jsonrpcService{
             method: method,
             params: [params]
         };
-        this.client.request[this.client.i] = dataObj;
+
         data = JSON.stringify(dataObj);
         this.client.ws.send(data);
+
+        if (callback != null) {
+            dataObj.callback = callback;
+        }
+        this.client.request[this.client.i] = dataObj;
     }
 
     onClientMessage(message: any): void {
         var data = JSON.parse(message.data);
-        console.log(data.result);
+        if (this.client.request[data.id].callback != null) {
+            this.client.request[data.id].callback(data.result, data.error);
+        }
         this.client.request[data.id] = null;
     }
 
@@ -84,6 +91,7 @@ export class jsonrpcService{
                     id: d.id,
                     result: result
                 };
+                console.log(response);
                 data = JSON.stringify(response);
                 this.server.ws.send(data);
                 return;
@@ -106,6 +114,7 @@ interface jsonrpcRequest {
     id: number;
     method: string;
     params?: any;
+    callback?: Function;
 }
 
 interface jsonrpcResponse {

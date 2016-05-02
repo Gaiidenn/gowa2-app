@@ -29,12 +29,14 @@ func pushHandler(ws *websocket.Conn) {
 	}
 	h.register <- c
 
-	err := rc.Call("App.log", "My test", nil)
+	var reply bool
+
+	err := rc.Call("App.log", "My test", &reply)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println(rc)
+	log.Println(reply)
 }
 /*
 const (

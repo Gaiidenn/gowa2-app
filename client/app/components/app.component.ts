@@ -46,16 +46,38 @@ export class AppComponent{
     sendMessage(message: string, i: number = 1) {
         this._rpc.Call("Msg.Echo", "message " + i + " : " + message);
         i++;
-        if (i <= 10) {
+        if (i <= 0) {
             let timer = Observable.timer(100);
             timer.subscribe(() => {
                 this.sendMessage(message, i);
             })
         }
+
+        var user = {
+            Username: "Gaiidenn",
+            Age: 29,
+            Gender: "M",
+            Likes: [],
+            Meets: []
+        }
+        this._rpc.Call("UserService.Save", user, this.messageReceived);
+    }
+
+    messageReceived(result: any, error: any) {
+        console.log("Message received !!!");
+        console.log(result);
     }
 
     log(message: string): boolean {
         console.log("Yeaaaah test passed : " + message);
         return true;
     }
+}
+
+interface User {
+    Username?: string;
+    Age?: number;
+    Gender?: string;
+    Likes: Array<string>;
+    Meets: Array<string>;
 }
