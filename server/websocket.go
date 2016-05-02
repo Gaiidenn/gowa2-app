@@ -15,18 +15,26 @@ import (
 )
 
 func jsonrpcHandler(ws *websocket.Conn) {
+	log.Println("connection websocket on jsonrpcHandler")
 	jsonrpc.ServeConn(ws)
 }
 
 func pushHandler(ws *websocket.Conn) {
-	c := jsonrpc.NewClient(ws)
+	log.Println("connection websocket on pushHandler")
+	rc := jsonrpc.NewClient(ws)
 
-	err := c.Call("Class.Method", nil, nil)
+	c := &connection{
+		rc: rc,
+		send: make(chan []byte),
+	}
+	h.register <- c
+
+	err := rc.Call("App.log", "My test", nil)
 	if err != nil {
-		log.Print("Class.Method :", err)
+		log.Println(err)
 		return
 	}
-	log.Print(c)
+	log.Println(rc)
 }
 /*
 const (
@@ -50,9 +58,6 @@ var upgrader = websocket.Upgrader{
 */
 // connection is an middleman between the websocket connection and the hub.
 type connection struct {
-	// The websocket connection.
-	ws *websocket.Conn
-
 	// The rpc client
 	rc *rpc.Client
 

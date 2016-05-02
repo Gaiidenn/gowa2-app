@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "concurrently": "^2.0.0",
+    "tsc": "^1.20150623.0",
     "typescript": "^1.8.10",
     "typings": "^0.7.12"
   }

@@ -39,17 +39,23 @@ export class AppComponent{
     ) {
         this._rpc.newClient("ws://localhost:8080/jsonrpc");
         this._rpc.newServer("ws://localhost:8080/push");
+
+        this._rpc.Register("App.log", this.log);
     }
 
     sendMessage(message: string, i: number = 1) {
-        let j = ((10*i) + (100 * i / 5)) / 5;
-        this._rpc.Call("Msg.Echo", "message " + j + " : " + message);
+        this._rpc.Call("Msg.Echo", "message " + i + " : " + message);
         i++;
-        if (i <= 50) {
+        if (i <= 10) {
             let timer = Observable.timer(100);
             timer.subscribe(() => {
                 this.sendMessage(message, i);
             })
         }
+    }
+
+    log(message: string): boolean {
+        console.log("Yeaaaah test passed : " + message);
+        return true;
     }
 }

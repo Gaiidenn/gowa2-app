@@ -7,7 +7,7 @@ export class jsonrpcService{
     public client: jsonrpcClient;
     public server: jsonrpcServer;
 
-    newClient(addr: string) {
+    newClient(addr: string): jsonrpcClient {
         this.client = {
             i: 0,
             maxRequest: this._maxRequest,
@@ -16,12 +16,15 @@ export class jsonrpcService{
             ws: new $WebSocket(addr),
         };
         this.client.ws.onMessage(this.onClientMessage.bind(this), null);
+
+        // Send a first empty message for initial handshake
+        this.client.ws.send("");
         return this.client;
     }
 
-    Call(method: string, params: any) {
+    Call(method: string, params: any): void {
         var data: string;
-        var dataObj: rpcRequest;
+        var dataObj: jsonrpcRequest;
 
         while (this.client.request[this.client.i] != null) {
             this.client.i++;
@@ -41,26 +44,80 @@ export class jsonrpcService{
         this.client.ws.send(data);
     }
 
-    onClientMessage(message: any) {
+    onClientMessage(message: any): void {
         var data = JSON.parse(message.data);
         console.log(data.result);
         this.client.request[data.id] = null;
     }
 
-    newServer(addr: string) {
+    newServer(addr: string): jsonrpcServer {
         this.server = {
             i: 0,
             method: [],
-            addr: addr
+            addr: addr,
+            ws: new $WebSocket(addr)
         };
+        this.server.ws.onMessage(this.onServerMessage.bind(this), null);
+
+        // Send a first empty message for initial handshake
+        this.server.ws.send("");
         return this.server;
+    }
+
+    Register(method: string, func: Function): void  {
+        this.server.method[this.server.i] = {
+            method: method,
+            func: func
+        };
+        this.server.i++;
+    }
+
+    onServerMessage(message: any): void {
+        var response: jsonrpcResponse;
+        var data: string;
+        var d = JSON.parse(message.data) as jsonrpcRequest;
+
+        for (var i = 0; i < this.server.i; i++) {
+            if (this.server.method[i].method == d.method) {
+                var result = this.server.method[i].func(d.params);
+                response = {
+                    id: d.id,
+                    result: result
+                };
+                data = JSON.stringify(response);
+                this.server.ws.send(data);
+                return;
+            }
+        }
+
+        response = {
+            id: d.id,
+            error: {
+                code: -32601,
+                message: 'Method not found'
+            }
+        };
+        data = JSON.stringify(response);
+        this.server.ws.send(data);
     }
 }
 
-interface rpcRequest {
+interface jsonrpcRequest {
     id: number;
     method: string;
     params?: any;
+}
+
+interface jsonrpcResponse {
+    id: number;
+    result?: any;
+    error?: jsonrpcError;
+}
+
+interface jsonrpcError {
+    code: number;
+    message: string;
+    data?: any;
 }
 
 interface jsonrpcClient {
@@ -75,4 +132,5 @@ interface jsonrpcServer {
     i: number;
     method: Array<any>;
     addr: string;
+    ws: $WebSocket;
 }
