@@ -80,9 +80,10 @@ func validFileRequest(path string) bool {
 }
 
 func initRPCRegistration() {
-	user_service := new(UserService)
-	rpc.Register(user_service)
+	userService := new(UserService)
+	rpc.Register(userService)
 }
+
 /*
 // Msg type
 type Msg string

@@ -1,0 +1,15 @@
+<h4>User : {{user.Username}}</h4>
+<form>
+    <label for="Username">Username</label>
+    <input [(ngModel)]="user.Username" placeholder="Username" required>
+
+    <label for="Age">Age</label>
+    <input type="text" placeholder="Age" required>
+
+    <label for="Gender">Gender</label>
+    <select>
+        <option *ngFor="let gender of genders" [value]="gender">{{gender}}</option>
+    </select>
+
+    <button type="submit">Submit</button>
+</form>

@@ -3,6 +3,7 @@ import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from 'angular2
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
 import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
 import {Observable} from 'rxjs/Rx';
+import {UserFormComponent} from './user/user-form.component'
 import {DashboardComponent} from '../components/dashboard/dashboard.component';
 import {TodoComponent} from '../components/todo/todo.component';
 
@@ -10,7 +11,8 @@ import {TodoComponent} from '../components/todo/todo.component';
     selector: 'my-app',
     templateUrl: 'app/components/app.component.html',
     directives: [
-        ROUTER_DIRECTIVES
+        ROUTER_DIRECTIVES,
+        UserFormComponent
     ],
     providers: [
         ROUTER_PROVIDERS,
@@ -75,6 +77,9 @@ export class AppComponent{
 }
 
 interface User {
+    _id?: string
+    _rev?: string
+    _key?: string
     Username?: string;
     Age?: number;
     Gender?: string;
