@@ -82,7 +82,8 @@ export class jsonrpcService{
     onServerMessage(message: any): void {
         var response: jsonrpcResponse;
         var data: string;
-        var d = JSON.parse(message.data) as jsonrpcRequest;
+	var d: jsonrpcRequest;
+        d = JSON.parse(message.data);
 
         for (var i = 0; i < this.server.i; i++) {
             if (this.server.method[i].method == d.method) {

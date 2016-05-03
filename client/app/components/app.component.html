@@ -7,6 +7,6 @@
 </nav>
 <input placeholder="Send a message" #message (keyup.enter)="sendMessage(message.value);message.value=''">
 <hr>
-<user-form></user-form>
+<user-form [_rpc]="getRPC()"></user-form>
 <hr>
 <router-outlet></router-outlet>

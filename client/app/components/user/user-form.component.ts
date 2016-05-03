@@ -1,4 +1,5 @@
-import {Component} from 'angular2/core'
+import {Component, Input, OnInit} from 'angular2/core'
+import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
 import {NgForm} from 'angular2/common'
 import {User} from './user'
 
@@ -9,14 +10,30 @@ import {User} from './user'
 export class UserFormComponent {
 
     genders = ['M', 'F'];
-    test = [1, 2, 3, 4, 5];
-    user = new User();
-    submitted = false;
+    user = new User("", "M", [], []);
 
-    onSubmit() {
-        this.submitted = true;
+    @Input()
+    private _rpc: jsonrpcService;
+
+    constructor() {
+
+    }
+
+    ngOnInit() {
+        console.log("-- RPC --");
+        console.log(this._rpc);
+    }
+
+    register() {
+        console.log('trying to call');
+        this._rpc.Call("UserService.Save", this.user, this.submitResponse);
+    }
+    submitResponse(result: any, error: any) {
+        console.log("result : " + JSON.stringify(result) + " | error : " + error);
     }
 
     // TODO: Remove this when we're done
-    get diagnostic() { return JSON.stringify(this.user); }
+    diagnostic() {
+        console.log(this.user);
+    }
 }

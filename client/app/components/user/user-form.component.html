@@ -4,12 +4,12 @@
     <input [(ngModel)]="user.Username" placeholder="Username" required>
 
     <label for="Age">Age</label>
-    <input type="text" placeholder="Age" required>
+    <input type="text" placeholder="Age">
 
     <label for="Gender">Gender</label>
-    <select>
+    <select [(ngModel)]="user.Gender" ngControl="gender" #gender="ngForm" (ngModelChange)="diagnostic()">
         <option *ngFor="let gender of genders" [value]="gender">{{gender}}</option>
     </select>
 
-    <button type="submit">Submit</button>
+    <button type="button" (click)="register()">Register</button>
 </form>

@@ -66,13 +66,16 @@ export class AppComponent{
     }
 
     messageReceived(result: any, error: any) {
-        console.log("Message received !!!");
-        console.log(result);
+        console.log("result : " + JSON.stringify(result) + " | error : " + error);
     }
 
     log(message: string): boolean {
         console.log("Yeaaaah test passed : " + message);
         return true;
+    }
+
+    getRPC(): jsonrpcService {
+        return this._rpc;
     }
 }
 
