@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from 'angular2/core'
+import {Component, Input} from 'angular2/core'
+import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
 import {NgForm} from 'angular2/common'
 import {User} from './user'
@@ -10,26 +11,25 @@ import {User} from './user'
 export class UserFormComponent {
 
     genders = ['M', 'F'];
-    user = new User("", "M", [], []);
 
     @Input()
+    user: User;
+    @Input()
     private _rpc: jsonrpcService;
+    @Input()
+    private _cookieService: CookieService;
 
     constructor() {
 
     }
 
-    ngOnInit() {
-        console.log("-- RPC --");
-        console.log(this._rpc);
-    }
-
     register() {
         console.log('trying to call');
-        this._rpc.Call("UserService.Save", this.user, this.submitResponse);
+        this._rpc.Call("UserService.Save", this.user, this.onRegisterResponse);
     }
-    submitResponse(result: any, error: any) {
+    onRegisterResponse(result: any, error: any) {
         console.log("result : " + JSON.stringify(result) + " | error : " + error);
+        //if (result && result.)
     }
 
     // TODO: Remove this when we're done

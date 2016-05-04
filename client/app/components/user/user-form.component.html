@@ -4,7 +4,7 @@
     <input [(ngModel)]="user.Username" placeholder="Username" required>
 
     <label for="Age">Age</label>
-    <input type="text" placeholder="Age">
+    <input type="text" placeholder="Age" [(ngModel)]="user.Age" (ngModelChange)="diagnostic()">
 
     <label for="Gender">Gender</label>
     <select [(ngModel)]="user.Gender" ngControl="gender" #gender="ngForm" (ngModelChange)="diagnostic()">

@@ -1,8 +1,10 @@
 import {Component} from 'angular2/core';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from 'angular2/router';
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
+import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
 import {Observable} from 'rxjs/Rx';
+import {User} from './user/user'
 import {UserFormComponent} from './user/user-form.component'
 import {DashboardComponent} from '../components/dashboard/dashboard.component';
 import {TodoComponent} from '../components/todo/todo.component';
@@ -16,6 +18,7 @@ import {TodoComponent} from '../components/todo/todo.component';
     ],
     providers: [
         ROUTER_PROVIDERS,
+        CookieService,
         jsonrpcService
     ]
 })
@@ -34,15 +37,24 @@ import {TodoComponent} from '../components/todo/todo.component';
 ])
 export class AppComponent{
     title = 'My GoWA2 APP !!';
+    user: User;
 
     constructor(
         private _router: Router,
+        private _cookieService: CookieService,
         private _rpc: jsonrpcService
     ) {
         this._rpc.newClient("ws://localhost:8080/jsonrpc");
         this._rpc.newServer("ws://localhost:8080/push");
 
         this._rpc.Register("App.log", this.log);
+
+        var userTmp = this._cookieService.getObject("user") as User;
+        if (userTmp) {
+            this.user = userTmp;
+        } else {
+            this.user = new User("", "M", [], []);
+        }
     }
 
     sendMessage(message: string, i: number = 1) {
@@ -54,15 +66,6 @@ export class AppComponent{
                 this.sendMessage(message, i);
             })
         }
-
-        var user = {
-            Username: "Gaiidenn",
-            Age: 29,
-            Gender: "M",
-            Likes: [],
-            Meets: []
-        }
-        this._rpc.Call("UserService.Save", user, this.messageReceived);
     }
 
     messageReceived(result: any, error: any) {
@@ -74,18 +77,11 @@ export class AppComponent{
         return true;
     }
 
-    getRPC(): jsonrpcService {
+    getRpcService(): jsonrpcService {
         return this._rpc;
     }
-}
 
-interface User {
-    _id?: string
-    _rev?: string
-    _key?: string
-    Username?: string;
-    Age?: number;
-    Gender?: string;
-    Likes: Array<string>;
-    Meets: Array<string>;
+    getCookieService(): CookieService {
+        return this._cookieService;
+    }
 }
