@@ -6,6 +6,7 @@ import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
 import {Observable} from 'rxjs/Rx';
 import {User} from './user/user'
 import {UserFormComponent} from './user/user-form.component'
+import {UserLoginComponent} from './user/user-login.component'
 import {DashboardComponent} from '../components/dashboard/dashboard.component';
 import {TodoComponent} from '../components/todo/todo.component';
 
@@ -14,7 +15,8 @@ import {TodoComponent} from '../components/todo/todo.component';
     templateUrl: 'app/components/app.component.html',
     directives: [
         ROUTER_DIRECTIVES,
-        UserFormComponent
+        UserFormComponent,
+        UserLoginComponent
     ],
     providers: [
         ROUTER_PROVIDERS,
@@ -53,28 +55,19 @@ export class AppComponent{
         if (userTmp) {
             this.user = userTmp;
         } else {
-            this.user = new User("", "M", [], []);
+            this.user = new User();
         }
+        console.log(this.user.isRegistered());
     }
 
-    sendMessage(message: string, i: number = 1) {
-        this._rpc.Call("Msg.Echo", "message " + i + " : " + message);
-        i++;
-        if (i <= 0) {
-            let timer = Observable.timer(100);
-            timer.subscribe(() => {
-                this.sendMessage(message, i);
-            })
-        }
-    }
-
-    messageReceived(result: any, error: any) {
-        console.log("result : " + JSON.stringify(result) + " | error : " + error);
-    }
-
+    // TODO remove this once REAL rpcServer methods are implemented
     log(message: string): boolean {
         console.log("Yeaaaah test passed : " + message);
         return true;
+    }
+
+    logout(): void {
+        this.user = new User(); // TODO implement a cleaner method to logout
     }
 
     getRpcService(): jsonrpcService {

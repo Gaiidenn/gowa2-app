@@ -1,15 +1,20 @@
-<h4>User : {{user.Username}}</h4>
-<form>
+<form #f="ngForm">
     <label for="Username">Username</label>
-    <input [(ngModel)]="user.Username" placeholder="Username" required>
+    <input [(ngModel)]="user.Username" pattern=".{3,}" ngControl="user.Username" placeholder="Username" #username (keyup.enter)="f.valid?register():return" required>
 
     <label for="Age">Age</label>
-    <input type="text" placeholder="Age" [(ngModel)]="user.Age" (ngModelChange)="diagnostic()">
+    <input type="number" placeholder="Age" ngControl="user.Age" [(ngModel)]="user.Age" #age (keyup.enter)="f.valid?register():return">
 
     <label for="Gender">Gender</label>
-    <select [(ngModel)]="user.Gender" ngControl="gender" #gender="ngForm" (ngModelChange)="diagnostic()">
+    <select [(ngModel)]="user.Gender" ngControl="user.Gender" #gender="ngForm" (keyup.enter)="f.valid?register():return" required>
         <option *ngFor="let gender of genders" [value]="gender">{{gender}}</option>
     </select>
 
-    <button type="button" (click)="register()">Register</button>
+    <label for="Email">Email</label>
+    <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}" placeholder="Email" ngControl="user.Email" [(ngModel)]="user.Email" #email (keyup.enter)="f.valid?register():return" required>
+
+    <label for="Password">Password</label>
+    <input type="password" placeholder="Password" pattern=".{3,}" ngControl="user.Password" [(ngModel)]="user.Password" #password (keyup.enter)="f.valid?register():return" required>
+
+    <button type="button" [disabled]="!f.valid" (click)="register()">Register</button>
 </form>

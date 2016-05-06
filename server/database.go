@@ -6,7 +6,6 @@ import (
 )
 
 var db *ara.Database
-var ctx *ara.Context
 
 func initDB() {
 	// Initialize database connection
@@ -26,12 +25,6 @@ func initDB() {
 	db = s.DB("test")
 
 	initCollections()
-
-	ctx, err =  ara.NewContext(db)
-	if err != nil {
-		log.Println("Error while created db context : ", err)
-		return
-	}
 }
 
 func initCollections() {

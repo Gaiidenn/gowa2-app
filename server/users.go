@@ -2,19 +2,22 @@ package main
 
 import (
 	//"log"
-
+	"time"
 	ara "github.com/diegogub/aranGO"
+	valid "github.com/asaskevich/govalidator"
 )
 
 // User struct
 type User struct {
-	ara.Document        // Must include arango Document in every struct you want to save id, key, rev after saving it
-	Username     string `unique:"users"`
-	Password     string
-	Age          int
-	Gender       string   `enum:"M,F"`
-	Likes        []string // TODO Change for an array of key => value for "UserId" => bool (dislike option)
-	Meets        []string // Users already met
+	ara.Document // Must include arango Document in every struct you want to save id, key, rev after saving it
+	Username string `unique:"users" required:"-"`
+	Email string `unique:"users" required:"-"`
+	Password string `required:"-"`
+	Age int
+	Gender string `enum:"M,F"`
+	Likes []string // TODO Change for an array of key => value for "UserId" => bool (dislike option)
+	Meets []string // Users already met
+	RegistrationDate time.Time
 }
 
 /**
@@ -38,13 +41,19 @@ func (user *User) GetError() (string, bool) {
 }
 
 /**
- *  Custom methods
+ *  Pre & Post save hooks
  */
-// init user for specific fields
-func (user *User) init() {
-	user.Gender = "M"
-	var likes []string
-	user.Likes = likes
-	var meets []string
-	user.Meets = meets
+
+// PreSave func for extra validation
+func (user *User) PreSave(c *ara.Context) {
+	if len(user.Username) < 3 {
+		c.Err["Username"] = "too short"
+	}
+	if valid.IsEmail(user.Email) == false  {
+		c.Err["Email"] = "invalid"
+	}
+	if len(user.Password) < 3 {
+		c.Err["Password"] = "too short"
+	}
+	return
 }

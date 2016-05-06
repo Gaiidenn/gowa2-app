@@ -16,7 +16,7 @@
         <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
         <script src="node_modules/angular2/bundles/router.dev.js"></script>
         <!-- Include angular2-cookie library -->
-        <script src="node_modules/angular2-cookie/bundles/angular2-cookie.min.js"></script> 
+        <script src="node_modules/angular2-cookie/bundles/angular2-cookie.min.js"></script>
 
         <!-- 2. Configure SystemJS -->
         <script>
@@ -27,7 +27,9 @@
                         defaultExtension: 'js'
                     }
                 },
-                map: { 'angular2-websocket/angular2-websocket' : 'node_modules/angular2-websocket/angular2-websocket.js' } // <-- this!
+                map: {
+                    'angular2-websocket/angular2-websocket' : 'node_modules/angular2-websocket/angular2-websocket.js'
+                } // <-- this!
             });
             System.import('app/main')
                 .then(null, console.error.bind(console));

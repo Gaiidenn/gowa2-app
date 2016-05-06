@@ -25,15 +25,18 @@ export class UserFormComponent {
 
     register() {
         console.log('trying to call');
-        this._rpc.Call("UserService.Save", this.user, this.onRegisterResponse);
+        this._rpc.Call("UserService.Save", this.user, this.onRegisterResponse.bind(this));
     }
     onRegisterResponse(result: any, error: any) {
-        console.log("result : " + JSON.stringify(result) + " | error : " + error);
-        //if (result && result.)
-    }
-
-    // TODO: Remove this when we're done
-    diagnostic() {
+        if (error != null) {
+            console.log(error);
+            return;
+        }
+        console.log(JSON.stringify(result));
+        for (let attr in result) {
+            this.user[attr] = result[attr]
+        }
         console.log(this.user);
+        console.log(this.user.isRegistered());
     }
 }

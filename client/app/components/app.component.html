@@ -1,12 +1,20 @@
-<h1>{{title}}</h1>
+<md-toolbar [color]="primary"><span>{{title}}</span></md-toolbar>
 <nav>
     <ul>
         <li><a [routerLink]="['Dashboard']">Dashboard</a>
         <li><a [routerLink]="['Todo']">Todo</a>
     </ul>
 </nav>
-<input placeholder="Send a message" #message (keyup.enter)="sendMessage(message.value);message.value=''">
 <hr>
-<user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
+<section *ngIf="user.isRegistered()">
+    <p>
+        Logged in as : {{user.Username}}
+    </p>
+    <button type="button" (click)="logout()">Logout</button>
+</section>
+<section *ngIf="!user.isRegistered()">
+    <user-login [user]="user" [_rpc]="getRpcService()"></user-login>
+    <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
+</section>
 <hr>
 <router-outlet></router-outlet>
