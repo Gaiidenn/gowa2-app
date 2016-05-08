@@ -1,5 +1,5 @@
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class jsonrpcService{

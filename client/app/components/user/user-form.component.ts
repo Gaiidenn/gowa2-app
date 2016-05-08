@@ -1,7 +1,7 @@
-import {Component, Input} from 'angular2/core'
+import {Component, Input} from '@angular/core'
 import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
-import {NgForm} from 'angular2/common'
+import {NgForm} from '@angular/common'
 import {User} from './user'
 
 @Component({

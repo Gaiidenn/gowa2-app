@@ -1,5 +1,5 @@
-import {Component} from 'angular2/core';
-import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from 'angular2/router';
+import {Component} from '@angular/core';
+import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from '@angular/router-deprecated';
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
 import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
