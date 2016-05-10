@@ -2,8 +2,8 @@
 ############################
 client/node_modules/
 client/typings/
-client/**/*.js
-client/**/*.js.map
+client/app/**/*.js
+client/app/**/*.js.map
 
 # COMMON .gitignore CONFIG #
 ############################
