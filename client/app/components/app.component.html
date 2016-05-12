@@ -1,20 +1,33 @@
-<md-toolbar [color]="primary"><span>{{title}}</span></md-toolbar>
-<nav>
-    <ul>
-        <li><a [routerLink]="['Dashboard']">Dashboard</a>
-        <li><a [routerLink]="['Todo']">Todo</a>
-    </ul>
-</nav>
-<hr>
-<section *ngIf="user.isRegistered()">
-    <p>
-        Logged in as : {{user.Username}}
-    </p>
-    <button type="button" (click)="logout()">Logout</button>
-</section>
-<section *ngIf="!user.isRegistered()">
-    <user-login [user]="user" [_rpc]="getRpcService()"></user-login>
-    <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
-</section>
-<hr>
-<router-outlet></router-outlet>
+<md-toolbar>
+    <button md-button (click)="start.toggle()">Nav</button>
+    <span>{{title}}</span>
+</md-toolbar>
+<md-sidenav-layout>
+    <md-sidenav #start align="start">
+        Start Sidenav
+        <br>
+        <button #myButton md-raised-button (click)="start.close()">Close</button>
+        <ul>
+            <li><a [routerLink]="['Dashboard']">Dashboard</a>
+            <li><a [routerLink]="['Todo']">Todo</a>
+        </ul>
+    </md-sidenav>
+    <md-sidenav #end align="end">
+        End Sidenav
+        <br>
+        <button md-raised-button (click)="end.close()">Close</button>
+    </md-sidenav>
+    <section *ngIf="user.isRegistered()">
+        <p>
+            Logged in as : {{user.Username}}
+        </p>
+        <button type="button" (click)="logout()">Logout</button>
+    </section>
+    <section *ngIf="!user.isRegistered()">
+        <user-login [user]="user" [_rpc]="getRpcService()"></user-login>
+        <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
+    </section>
+    <hr>
+    <router-outlet></router-outlet>
+
+</md-sidenav-layout>

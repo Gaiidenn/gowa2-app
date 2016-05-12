@@ -6,7 +6,7 @@
     'rxjs':                       'node_modules/rxjs',
     'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     '@angular':                   'node_modules/@angular',
-    'angular2':                   'node_modules/angular2',
+    '@angular2-material':         'node_modules/@angular2-material',
     'angular2-websocket':         'node_modules/angular2-websocket',
     'angular2-cookie':            'node_modules/angular2-cookie'
   };
@@ -19,6 +19,10 @@
     'angular2-in-memory-web-api': { defaultExtension: 'js' },
     'angular2-websocket':         { defaultExtension: 'js' },
     'angular2-cookie':            { defaultExtension: 'js' },
+    '@angular2-material/core':    { main: 'core.js' },
+    '@angular2-material/toolbar': { main: 'toolbar.js' },
+    '@angular2-material/button':  { main: 'button.js' },
+    '@angular2-material/sidenav': { main: 'sidenav.js' },
   };
 
   var packageNames = [

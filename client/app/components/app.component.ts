@@ -1,12 +1,15 @@
 import {Component} from '@angular/core';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from '@angular/router-deprecated';
+import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
+import {MdButton} from '@angular2-material/button';
+import {MdToolbar} from '@angular2-material/toolbar';
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
 import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
 import {Observable} from 'rxjs/Rx';
-import {User} from './user/user'
-import {UserFormComponent} from './user/user-form.component'
-import {UserLoginComponent} from './user/user-login.component'
+import {User} from './user/user';
+import {UserFormComponent} from './user/user-form.component';
+import {UserLoginComponent} from './user/user-login.component';
 import {DashboardComponent} from '../components/dashboard/dashboard.component';
 import {TodoComponent} from '../components/todo/todo.component';
 
@@ -15,6 +18,9 @@ import {TodoComponent} from '../components/todo/todo.component';
     templateUrl: 'app/components/app.component.html',
     directives: [
         ROUTER_DIRECTIVES,
+        MD_SIDENAV_DIRECTIVES,
+        MdButton,
+        MdToolbar,
         UserFormComponent,
         UserLoginComponent
     ],
