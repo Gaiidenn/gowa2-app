@@ -1,10 +1,16 @@
 import {Component, Input} from '@angular/core'
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {MdButton} from '@angular2-material/button';
 import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
 import {User} from './user';
 
 @Component({
     selector: 'user-login',
-    'templateUrl': 'app/components/user/user-login.component.html'
+    'templateUrl': 'app/components/user/user-login.component.html',
+    directives: [
+        MD_INPUT_DIRECTIVES,
+        MdButton
+    ]
 })
 export class UserLoginComponent {
     @Input()

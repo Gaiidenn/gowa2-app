@@ -1,9 +1,3 @@
-<form>
-    <label for="Username">Username / Email</label>
-    <input placeholder="Username or email" #username [(ngModel)]="userLogin.Username" (keyup.enter)="valid()?submit():return" required>
-
-    <label for="Age">Password</label>
-    <input type="password" placeholder="Password" [(ngModel)]="userLogin.Password" (keyup.enter)="valid()?submit():return" required>
-
-    <button type="button" (click)="submit()" [disabled]="!valid()">Login</button>
-</form>
+<md-input placeholder="Username or email" #username [(ngModel)]="userLogin.Username" (keyup.enter)="valid()?submit():return" required></md-input>
+<md-input type="password" placeholder="Password" [(ngModel)]="userLogin.Password" (keyup.enter)="valid()?submit():return" required></md-input>
+<button md-button type="button" (click)="submit()" [disabled]="!valid()">Login</button>

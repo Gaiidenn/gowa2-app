@@ -1,33 +1,30 @@
-<md-toolbar>
-    <button md-button (click)="start.toggle()">Nav</button>
-    <span>{{title}}</span>
+<md-toolbar color="primary">
+    <button md-icon-button (click)="start.toggle()"><md-icon>menu</md-icon></button>
+    <span class="flex">{{title}}</span>
+    <span  *ngIf="user.isRegistered()">
+        <span>Logged in as : {{user.Username}}</span><button md-icon-button type="button" (click)="logout()"><md-icon>assignment</md-icon></button>
+    </span>
+    <span  *ngIf="!user.isRegistered()">
+        <button md-icon-button type="button" (click)="end.toggle()"><md-icon>register</md-icon></button>
+        <user-login [user]="user" [_rpc]="getRpcService()"></user-login>
+    </span>
 </md-toolbar>
 <md-sidenav-layout>
-    <md-sidenav #start align="start">
-        Start Sidenav
-        <br>
-        <button #myButton md-raised-button (click)="start.close()">Close</button>
-        <ul>
-            <li><a [routerLink]="['Dashboard']">Dashboard</a>
-            <li><a [routerLink]="['Todo']">Todo</a>
-        </ul>
+    <md-sidenav #start align="start" mode="side" opened="true">
+        <md-toolbar>
+            Start Sidenav
+        </md-toolbar>
+        <md-list>
+            <md-list-item><a [routerLink]="['Dashboard']">Dashboard</a></md-list-item>
+            <md-list-item><a [routerLink]="['Todo']">Todo</a></md-list-item>
+        </md-list>
     </md-sidenav>
     <md-sidenav #end align="end">
-        End Sidenav
-        <br>
+        <md-toolbar>
+            End Sidenav
+        </md-toolbar>
+        <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
         <button md-raised-button (click)="end.close()">Close</button>
     </md-sidenav>
-    <section *ngIf="user.isRegistered()">
-        <p>
-            Logged in as : {{user.Username}}
-        </p>
-        <button type="button" (click)="logout()">Logout</button>
-    </section>
-    <section *ngIf="!user.isRegistered()">
-        <user-login [user]="user" [_rpc]="getRpcService()"></user-login>
-        <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
-    </section>
-    <hr>
     <router-outlet></router-outlet>
-
 </md-sidenav-layout>

@@ -1,6 +1,9 @@
 import {Component} from '@angular/core';
+import {HTTP_PROVIDERS} from '@angular/http';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from '@angular/router-deprecated';
 import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
+import {MD_LIST_DIRECTIVES} from '@angular2-material/list';
+import {MdIcon, MdIconRegistry} from '@angular2-material/icon';
 import {MdButton} from '@angular2-material/button';
 import {MdToolbar} from '@angular2-material/toolbar';
 import {$WebSocket} from 'angular2-websocket/angular2-websocket';
@@ -16,16 +19,21 @@ import {TodoComponent} from '../components/todo/todo.component';
 @Component({
     selector: 'my-app',
     templateUrl: 'app/components/app.component.html',
+    styleUrls: ['app/components/app.component.css'],
     directives: [
         ROUTER_DIRECTIVES,
         MD_SIDENAV_DIRECTIVES,
+        MD_LIST_DIRECTIVES,
+        MdIcon,
         MdButton,
         MdToolbar,
         UserFormComponent,
         UserLoginComponent
     ],
     providers: [
+        HTTP_PROVIDERS,
         ROUTER_PROVIDERS,
+        MdIconRegistry,
         CookieService,
         jsonrpcService
     ]
