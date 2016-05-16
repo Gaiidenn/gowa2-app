@@ -1,20 +1,28 @@
-import {Component, Input} from '@angular/core'
+import {Component, Input, OnInit} from '@angular/core'
+import {CookieService} from 'angular2-cookie/core';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {MD_LIST_DIRECTIVES} from '@angular2-material/list';
+import {MdToolbar} from '@angular2-material/toolbar';
 import {MdButton} from '@angular2-material/button';
 import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
 import {User} from './user';
 
 @Component({
     selector: 'user-login',
-    'templateUrl': 'app/components/user/user-login.component.html',
+    templateUrl: 'app/components/user/user-login.component.html',
+    styleUrls: ['app/components/user/user-login.component.css'],
     directives: [
         MD_INPUT_DIRECTIVES,
+        MD_LIST_DIRECTIVES,
+        MdToolbar,
         MdButton
     ]
 })
-export class UserLoginComponent {
+export class UserLoginComponent implements OnInit {
     @Input()
     private _rpc: jsonrpcService;
+    @Input()
+    private _cookieService: CookieService;
     @Input()
     user: User;
 
@@ -22,6 +30,16 @@ export class UserLoginComponent {
         Username: "",
         Password: ""
     };
+
+    ngOnInit() {
+        let username = this._cookieService.get("username");
+        let password = this._cookieService.get("password");
+        if (username && password) {
+            this.userLogin.Username = username;
+            this.userLogin.Password  = password;
+            this.submit();
+        }
+    }
 
     submit() {
         console.log("submit login!");
@@ -36,6 +54,8 @@ export class UserLoginComponent {
         for (let attr in result) {
             this.user[attr] = result[attr]
         }
+        this._cookieService.put("username", this.user.Username);
+        this._cookieService.put("password", this.user.Password);
         console.log(this.user);
         console.log(this.user.isRegistered());
     }

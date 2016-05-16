@@ -1,16 +1,9 @@
 <md-toolbar color="primary">
     <button md-icon-button (click)="start.toggle()"><md-icon>menu</md-icon></button>
     <span class="flex">{{title}}</span>
-    <span  *ngIf="user.isRegistered()">
-        <span>Logged in as : {{user.Username}}</span><button md-icon-button type="button" (click)="logout()"><md-icon>assignment</md-icon></button>
-    </span>
-    <span  *ngIf="!user.isRegistered()">
-        <button md-icon-button type="button" (click)="end.toggle()"><md-icon>register</md-icon></button>
-        <user-login [user]="user" [_rpc]="getRpcService()"></user-login>
-    </span>
 </md-toolbar>
 <md-sidenav-layout>
-    <md-sidenav #start align="start" mode="side" opened="true">
+    <md-sidenav #start align="start">
         <md-toolbar>
             Start Sidenav
         </md-toolbar>
@@ -19,12 +12,13 @@
             <md-list-item><a [routerLink]="['Todo']">Todo</a></md-list-item>
         </md-list>
     </md-sidenav>
-    <md-sidenav #end align="end">
-        <md-toolbar>
-            End Sidenav
+    <md-sidenav #end align="end" mode="side" opened="true">
+        <md-toolbar *ngIf="user.isRegistered()">
+            <span class="flex">Logged in as : {{user.Username}}</span>
+            <span><button md-icon-button type="button" (click)="logout()"><md-icon>exit_to_app</md-icon></button></span>
         </md-toolbar>
+        <user-login [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()" *ngIf="!user.isRegistered()"></user-login>
         <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
-        <button md-raised-button (click)="end.close()">Close</button>
     </md-sidenav>
     <router-outlet></router-outlet>
 </md-sidenav-layout>

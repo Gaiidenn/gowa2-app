@@ -3,6 +3,7 @@ import {HTTP_PROVIDERS} from '@angular/http';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from '@angular/router-deprecated';
 import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
 import {MD_LIST_DIRECTIVES} from '@angular2-material/list';
+import {MD_CARD_DIRECTIVES} from '@angular2-material/card';
 import {MdIcon, MdIconRegistry} from '@angular2-material/icon';
 import {MdButton} from '@angular2-material/button';
 import {MdToolbar} from '@angular2-material/toolbar';
@@ -23,6 +24,7 @@ import {TodoComponent} from '../components/todo/todo.component';
     directives: [
         ROUTER_DIRECTIVES,
         MD_SIDENAV_DIRECTIVES,
+        MD_CARD_DIRECTIVES,
         MD_LIST_DIRECTIVES,
         MdIcon,
         MdButton,
@@ -65,23 +67,20 @@ export class AppComponent{
 
         this._rpc.Register("App.log", this.log);
 
-        var userTmp = this._cookieService.getObject("user") as User;
-        if (userTmp) {
-            this.user = userTmp;
-        } else {
-            this.user = new User();
-        }
-        console.log(this.user.isRegistered());
+        this.user = new User();
     }
 
     // TODO remove this once REAL rpcServer methods are implemented
-    log(message: string): boolean {
+    log(message: string): string {
         console.log("Yeaaaah test passed : " + message);
-        return true;
+        return "test passed!";
     }
 
     logout(): void {
+        this.user = null;
         this.user = new User(); // TODO implement a cleaner method to logout
+        this._cookieService.put("username", null);
+        this._cookieService.put("password", null);
     }
 
     getRpcService(): jsonrpcService {

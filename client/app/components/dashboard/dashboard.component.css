@@ -1,0 +1,5 @@
+md-card {
+    flex: 1 1 auto;
+    margin: 2%;
+    transition: all 0.5s ease;
+}

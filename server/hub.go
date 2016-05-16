@@ -4,11 +4,13 @@
 
 package main
 
+import "log"
+
 // hub maintains the set of active connections and broadcasts messages to the
 // connections.
 type hub struct {
 	// Inbound messages from the connections.
-	broadcast chan []byte
+	broadcast chan *rpcCall
 
 	// Register requests from the connections.
 	register chan *connection
@@ -21,7 +23,7 @@ type hub struct {
 }
 
 var h = hub{
-	broadcast:   make(chan []byte),
+	broadcast:   make(chan *rpcCall),
 	register:    make(chan *connection),
 	unregister:  make(chan *connection),
 	connections: make(map[*connection]bool),
@@ -35,14 +37,16 @@ func (h *hub) run() {
 		case c := <-h.unregister:
 			if _, ok := h.connections[c]; ok {
 				delete(h.connections, c)
-				close(c.send)
+				close(c.call)
 			}
 		case m := <-h.broadcast:
+			log.Println("trying to broadcast")
+			log.Println(m)
 			for c := range h.connections {
 				select {
-				case c.send <- m:
+				case c.call <- m:
 				default:
-					close(c.send)
+					close(c.call)
 					delete(h.connections, c)
 				}
 			}

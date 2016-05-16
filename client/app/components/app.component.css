@@ -1,3 +1,9 @@
-.flex {
-    flex: 1 1 auto;
+md-sidenav {
+    width: 350px;
+    overflow: scroll;
+    transition: all 1.5s ease;
+}
+
+md-content {
+    min-height: 320px;
 }

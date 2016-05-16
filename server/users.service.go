@@ -27,6 +27,7 @@ func (us *UserService) Save(user *User, reply *User) error {
 	e := ctx.Save(user)
 	if len(e) > 0 {
 		jsonError, _ := json.Marshal(e)
+		log.Println(string(jsonError))
 		return errors.New(string(jsonError)) //"problem!"
 	}
 	log.Println(user)
@@ -48,5 +49,12 @@ func (us *UserService) Login(userLogin *User, user *User) error {
 	if user.Password != userLogin.Password {
 		return errors.New("{Password: 'wrong password'}")
 	}
+	var reply string
+	h.broadcast <- &rpcCall{
+		method: "App.log",
+		args: "User logged : " + user.Username,
+		reply: &reply,
+	}
+	log.Println(reply)
 	return nil
 }

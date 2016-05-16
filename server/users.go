@@ -46,6 +46,16 @@ func (user *User) GetError() (string, bool) {
 
 // PreSave func for extra validation
 func (user *User) PreSave(c *ara.Context) {
+	user.Validate(c)
+	return
+}
+
+func (user *User) PreUpdate(c *ara.Context) {
+	user.Validate(c)
+	return
+}
+
+func (user *User) Validate(c *ara.Context) {
 	if len(user.Username) < 3 {
 		c.Err["Username"] = "too short"
 	}
@@ -55,5 +65,4 @@ func (user *User) PreSave(c *ara.Context) {
 	if len(user.Password) < 3 {
 		c.Err["Password"] = "too short"
 	}
-	return
 }

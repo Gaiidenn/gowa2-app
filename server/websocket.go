@@ -23,48 +23,62 @@ func pushHandler(ws *websocket.Conn) {
 	log.Println("connection websocket on pushHandler")
 	rc := jsonrpc.NewClient(ws)
 
+	call := make(chan *rpcCall)
+
 	c := &connection{
 		rc: rc,
-		send: make(chan []byte),
+		call: call,
 	}
 	h.register <- c
-
-	var reply bool
+	c.callPump()
+	/*
+	var reply string
 
 	err := rc.Call("App.log", "My test", &reply)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println(reply)
+	log.Println(reply)*/
 }
-/*
-const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
 
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
-
-	// Maximum message size allowed from peer.
-	maxMessageSize = 512
-)
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-*/
 // connection is an middleman between the websocket connection and the hub.
 type connection struct {
 	// The rpc client
 	rc *rpc.Client
 
 	// Buffered channel of outbound messages.
-	send chan []byte
+	call chan *rpcCall
+}
+
+type rpcCall struct {
+	method string
+	args interface{}
+	reply interface{}
+}
+
+// callPump pumps calls from the hub to the rpc connection.
+func (c *connection) callPump() {
+	defer func() {
+		c.rc.Close()
+	}()
+	log.Println("we are in callpump")
+	for {
+		select {
+		case call, ok := <- c.call:
+			if !ok {
+				return
+			}
+			if err := c.rc.Call(call.method, call.args, &call.reply); err != nil {
+				log.Println("error calling : ")
+				log.Println(err)
+				return
+			} else {
+				log.Println("call ok -> reply : ")
+				log.Println(call.reply)
+			}
+		}
+	}
 }
 /*
 // readPump pumps messages from the websocket connection to the hub.
