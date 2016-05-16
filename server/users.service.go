@@ -5,7 +5,7 @@ import (
 	"time"
 	"errors"
 	"encoding/json"
-	ara "github.com/diegogub/aranGO"
+	ara "github.com/solher/arangolite"
 )
 
 // UserService for jsonRPC requests
@@ -14,47 +14,98 @@ type UserService struct {
 
 // Save the user in database
 func (us *UserService) Save(user *User, reply *User) error {
-	ctx, ae :=  ara.NewContext(db)
-	if ae != nil {
-		log.Println("Error while created db context : ", ae)
-		jsonAE, _ := json.Marshal(ae)
-		return errors.New(string(jsonAE))
-	}
 	if user.RegistrationDate.IsZero() {
-		user.RegistrationDate = time.Now();
+		user.RegistrationDate = time.Now()
 	}
-	log.Println(user)
-	e := ctx.Save(user)
-	if len(e) > 0 {
-		jsonError, _ := json.Marshal(e)
-		log.Println(string(jsonError))
-		return errors.New(string(jsonError)) //"problem!"
+	var q *ara.Query
+	if user.Key == nil {
+		rd, _ := user.RegistrationDate.MarshalJSON()
+		q = ara.NewQuery(`INSERT {
+				Username: %q,
+				Email: %q,
+				Password: %q,
+				Age: %d,
+				Gender: %q,
+				Likes: %q,
+				Meets: %q,
+				RegistrationDate: %s
+			} IN users`,
+			user.Username,
+			user.Email,
+			user.Password,
+			user.Age,
+			user.Username,
+			user.Likes,
+			user.Meets,
+			rd,
+			)
+
+	} else {
+		q = ara.NewQuery(`UPDATE %q WITH {
+				Username: %q,
+				Email: %q,
+				Password: %q,
+				Age: %d,
+				Gender: %q,
+				Likes: %q,
+				Meets: %q
+			} IN users`,
+			*user.Key,
+			user.Username,
+			user.Email,
+			user.Password,
+			user.Age,
+			user.Username,
+			user.Likes,
+			user.Meets,
+			)
 	}
-	log.Println(user)
-	*reply = *user
-	return nil
+	log.Println(q)
+	_, err := db.Run(q)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	var users []User
+	q = ara.NewQuery(`FOR user IN users FILTER user.Username == %q RETURN user`, user.Username).Cache(true).BatchSize(500)
+	resp, err := db.Run(q)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println(string(resp))
+	err = json.Unmarshal(resp, &users)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println(users)
+	if len(users) > 0 {
+		*reply = users[0]
+		return nil
+	}
+	return errors.New("prout")
 }
 
 // Log the user in app
 func (us *UserService) Login(userLogin *User, user *User) error {
-	var tmpUser struct{
-		Username string
+	q := ara.NewQuery(`FOR user IN users FILTER user.Username == %q RETURN user`, userLogin.Username).Cache(true).BatchSize(500)
+	log.Println(q)
+	resp, err := db.Run(q)
+	if err != nil {
+		log.Println(err)
+		return err
 	}
-	tmpUser.Username = userLogin.Username
-	e := db.Col(user.GetCollection()).First(&tmpUser, user)
-	if e != nil {
-		return errors.New("{Username: 'invalid username'}")
+	var users []User
+	err = json.Unmarshal(resp, &users)
+	if err != nil {
+		log.Println(err)
+		return err
 	}
-
-	if user.Password != userLogin.Password {
-		return errors.New("{Password: 'wrong password'}")
+	log.Println(users)
+	if len(users) > 0 {
+		*user = users[0]
+		return nil
 	}
-	var reply string
-	h.broadcast <- &rpcCall{
-		method: "App.log",
-		args: "User logged : " + user.Username,
-		reply: &reply,
-	}
-	log.Println(reply)
-	return nil
+	return errors.New("unknown username")
 }

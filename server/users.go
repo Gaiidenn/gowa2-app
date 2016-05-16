@@ -3,8 +3,9 @@ package main
 import (
 	//"log"
 	"time"
-	ara "github.com/diegogub/aranGO"
-	valid "github.com/asaskevich/govalidator"
+	//ara "github.com/diegogub/aranGO"
+	ara "github.com/solher/arangolite"
+	//valid "github.com/asaskevich/govalidator"
 )
 
 // User struct
@@ -23,7 +24,7 @@ type User struct {
 /**
  *  Methods needed for Model
  */
-
+/*
 // GetKey return the key of user in db
 func (user *User) GetKey() string {
 	return user.Key
@@ -39,11 +40,11 @@ func (user *User) GetError() (string, bool) {
 	// default error bool and messages. Could be any kind of error
 	return user.Message, user.Error
 }
-
+*/
 /**
  *  Pre & Post save hooks
  */
-
+/*
 // PreSave func for extra validation
 func (user *User) PreSave(c *ara.Context) {
 	user.Validate(c)
@@ -55,7 +56,7 @@ func (user *User) PreUpdate(c *ara.Context) {
 	return
 }
 
-func (user *User) Validate(c *ara.Context) {
+func (user *User) Validate() {
 	if len(user.Username) < 3 {
 		c.Err["Username"] = "too short"
 	}
@@ -65,4 +66,4 @@ func (user *User) Validate(c *ara.Context) {
 	if len(user.Password) < 3 {
 		c.Err["Password"] = "too short"
 	}
-}
+}*/

@@ -2,28 +2,29 @@ package main
 
 import (
 	"log"
-	ara "github.com/diegogub/aranGO"
+	ara "github.com/solher/arangolite"
 )
 
-var db *ara.Database
+var db *ara.DB
 
 func initDB() {
-	// Initialize database connection
-	s, err := ara.Connect("http://localhost:8529", "root", "", false)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	db = ara.New().
+	    LoggerOptions(false, false, false).
+	    Connect("http://localhost:8529", "_system", "root", "")
 
-	// Try to create the database if it doesn't exists
-	err = s.CreateDB("test", nil)
+	_, err := db.Run(&ara.CreateDatabase{
+	    Name: "test",
+	    Users: []map[string]interface{}{
+	        {"username": "root", "passwd": ""},
+	    },
+	})
 	if err != nil {
 		log.Println(err)
 	} else {
-		log.Println("DataBase successfully created")
+		log.Println("Database successfully created")
 	}
-	db = s.DB("test")
 
+	db.SwitchDatabase("test")
 	initCollections()
 }
 
@@ -39,12 +40,10 @@ func initCollections() {
 }
 
 func createCollection(colName string) {
-	// Try to create the collection
-	if db.ColExist(colName) {
-		log.Println("Collection", colName, "already exists")
-		return
-	}
-	col := ara.NewCollectionOptions(colName, true)
-	db.CreateCollection(col)
-	log.Println("Collection", colName, "successfully created")
+	 _, err := db.Run(&ara.CreateCollection{Name: colName})
+	 if err != nil {
+		 log.Println(err)
+		 return
+	 }
+	 log.Println("Collection", colName, "successfully created")
 }
