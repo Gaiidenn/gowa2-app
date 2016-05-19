@@ -90,7 +90,6 @@ func (us *UserService) Save(user *User, reply *User) error {
 // Log the user in app
 func (us *UserService) Login(userLogin *User, user *User) error {
 	q := ara.NewQuery(`FOR user IN users FILTER user.Username == %q RETURN user`, userLogin.Username).Cache(true).BatchSize(500)
-	log.Println(q)
 	resp, err := db.Run(q)
 	if err != nil {
 		log.Println(err)
@@ -108,4 +107,24 @@ func (us *UserService) Login(userLogin *User, user *User) error {
 		return nil
 	}
 	return errors.New("unknown username")
+}
+
+// Get all users from collection
+func (us *UserService) GetAll(_ *string, reply *[]User) error {
+	q := ara.NewQuery(`FOR user IN users RETURN user`).Cache(true).BatchSize(500)
+	log.Println(q)
+	resp, err := db.Run(q)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	var users []User
+	err = json.Unmarshal(resp, &users)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println(users)
+	*reply = users
+	return nil
 }

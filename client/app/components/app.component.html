@@ -20,5 +20,5 @@
         <user-login [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()" *ngIf="!user.isRegistered()"></user-login>
         <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
     </md-sidenav>
-    <router-outlet></router-outlet>
+    <router-outlet ></router-outlet>
 </md-sidenav-layout>

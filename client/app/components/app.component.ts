@@ -40,19 +40,6 @@ import {TodoComponent} from '../components/todo/todo.component';
         jsonrpcService
     ]
 })
-@RouteConfig([
-    {
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: DashboardComponent,
-        useAsDefault: true
-    },
-    {
-        path: '/todo',
-        name: 'Todo',
-        component: TodoComponent
-    }
-])
 export class AppComponent{
     title = 'My GoWA2 APP !!';
     user: User;
@@ -68,6 +55,24 @@ export class AppComponent{
         this._rpc.Register("App.log", this.log);
 
         this.user = new User();
+
+
+        _router.config([
+            {
+                path: '/dashboard',
+                name: 'Dashboard',
+                component: DashboardComponent,
+                useAsDefault: true,
+                data: {
+                    _rpc: this._rpc
+                }
+            },
+            {
+                path: '/todo',
+                name: 'Todo',
+                component: TodoComponent
+            }
+        ]);
     }
 
     // TODO remove this once REAL rpcServer methods are implemented

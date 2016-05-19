@@ -1,8 +1,13 @@
 <md-toolbar>
     <span>Dashboard</span>
 </md-toolbar>
-<md-card>
-    <md-card-content style="height: 500px;">
-        <p>This will be my dashboard component !!!</p>
+<md-card *ngFor="let user of users">
+    <md-card-title>{{user.Username}}</md-card-title>
+    <md-card-content>
+        <md-list>
+            <md-list-item>{{user.Email}}</md-list-item>
+            <md-list-item>{{user.Age}}</md-list-item>
+            <md-list-item>{{user.Gender}}</md-list-item>
+        </md-list>
     </md-card-content>
 </md-card>
