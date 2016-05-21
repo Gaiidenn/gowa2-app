@@ -12,6 +12,7 @@ import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../components/jsonrpc/jsonrpc.service';
 import {Observable} from 'rxjs/Rx';
 import {User} from './user/user';
+import {UserService} from './user/user.service';
 import {UserFormComponent} from './user/user-form.component';
 import {UserLoginComponent} from './user/user-login.component';
 import {DashboardComponent} from '../components/dashboard/dashboard.component';
@@ -37,42 +38,37 @@ import {TodoComponent} from '../components/todo/todo.component';
         ROUTER_PROVIDERS,
         MdIconRegistry,
         CookieService,
-        jsonrpcService
+        jsonrpcService,
+        UserService
     ]
 })
+@RouteConfig([
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: DashboardComponent,
+        useAsDefault: true,
+    },
+    {
+        path: '/todo',
+        name: 'Todo',
+        component: TodoComponent
+    }
+])
 export class AppComponent{
     title = 'My GoWA2 APP !!';
-    user: User;
 
     constructor(
         private _router: Router,
         private _cookieService: CookieService,
-        private _rpc: jsonrpcService
+        private _rpc: jsonrpcService,
+        private _userService: UserService
     ) {
-        this._rpc.newClient("ws://localhost:8080/jsonrpc");
-        this._rpc.newServer("ws://localhost:8080/push");
+        let baseUrl = this.getBaseUrl();
+        this._rpc.newClient("ws://" + baseUrl + "/jsonrpc");
+        this._rpc.newServer("ws://" + baseUrl + "/push");
 
         this._rpc.Register("App.log", this.log);
-
-        this.user = new User();
-
-
-        _router.config([
-            {
-                path: '/dashboard',
-                name: 'Dashboard',
-                component: DashboardComponent,
-                useAsDefault: true,
-                data: {
-                    _rpc: this._rpc
-                }
-            },
-            {
-                path: '/todo',
-                name: 'Todo',
-                component: TodoComponent
-            }
-        ]);
     }
 
     // TODO remove this once REAL rpcServer methods are implemented
@@ -82,17 +78,22 @@ export class AppComponent{
     }
 
     logout(): void {
-        this.user = null;
-        this.user = new User(); // TODO implement a cleaner method to logout
-        this._cookieService.put("username", null);
-        this._cookieService.put("password", null);
+        this._userService.logout();
     }
 
-    getRpcService(): jsonrpcService {
-        return this._rpc;
+    isUserRegistered(): boolean {
+        return this._userService.isUserRegistered();
     }
 
-    getCookieService(): CookieService {
-        return this._cookieService;
+    private getBaseUrl(): string {
+        let baseUrl = window.location.href;
+        let prefix = "https://";
+        if (baseUrl.indexOf(prefix) == 0) {
+            baseUrl = baseUrl.substr(prefix.length);
+        } else {
+            prefix = "http://";
+            baseUrl = baseUrl.substr(prefix.length);
+        }
+        return baseUrl.split("/")[0];
     }
 }

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {MD_LIST_DIRECTIVES} from '@angular2-material/list';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MdRadioGroup, MdRadioButton, MdRadioDispatcher} from '@angular2-material/radio';
@@ -9,6 +9,7 @@ import {CookieService} from 'angular2-cookie/core';
 import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
 import {NgForm} from '@angular/common';
 import {User} from './user';
+import {UserService} from './user.service';
 
 @Component({
     selector: 'user-form',
@@ -27,43 +28,38 @@ import {User} from './user';
         MdRadioDispatcher
     ]
 })
-export class UserFormComponent {
+export class UserFormComponent implements OnInit {
 
     genders = ['M', 'F'];
 
-    @Input()
-    user: User;
-    tmpUser: User = new User();
-    @Input()
-    private _rpc: jsonrpcService;
-    @Input()
-    private _cookieService: CookieService;
+    tmpUser: User;
     private _editEnabled: boolean = false;
 
-    save() {
-        this._rpc.Call("UserService.Save", this.user, this.onSaveResponse.bind(this));
+    constructor(
+        private _rpc: jsonrpcService,
+        private _cookieService: CookieService,
+        private _userService: UserService
+    ) {
+
     }
-    onSaveResponse(result: any, error: any) {
-        if (error != null) {
-            console.log(error);
-            return;
-        }
-        for (let attr in result) {
-            this.user[attr] = result[attr];
-        }
-        this._cookieService.put("username", this.user.Username);
-        this._cookieService.put("password", this.user.Password);
+
+    ngOnInit() {
+        this.tmpUser = this._userService.user;
+    }
+
+    save() {
+        this._userService.save();
         this._editEnabled = false;
     }
 
     toggleEdit() {
         if (this._editEnabled == false) {
-            for (let attr in this.user) {
-                this.tmpUser[attr] = this.user[attr];
+            for (let attr in this._userService.user) {
+                this.tmpUser[attr] = this._userService.user[attr];
             }
         } else {
-            for (let attr in this.user) {
-                this.user[attr] = this.tmpUser[attr];
+            for (let attr in this._userService.user) {
+                this._userService.user[attr] = this.tmpUser[attr];
             }
         }
         this._editEnabled = !this._editEnabled;

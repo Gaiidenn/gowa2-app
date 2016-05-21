@@ -1,7 +1,13 @@
 <md-toolbar>
     <span>Dashboard</span>
 </md-toolbar>
-<md-card *ngFor="let user of users">
+<md-card *ngIf="!_usersService.list">
+    Users list is loading...
+</md-card>
+<md-card *ngIf="_usersService.list && _usersService.list.length == 0">
+    No users to display
+</md-card>
+<md-card *ngFor="let user of _usersService.list">
     <md-card-title>{{user.Username}}</md-card-title>
     <md-card-content>
         <md-list>
@@ -11,3 +17,4 @@
         </md-list>
     </md-card-content>
 </md-card>
+<div style="clear: both;"></div>

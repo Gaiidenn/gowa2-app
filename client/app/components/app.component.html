@@ -13,12 +13,12 @@
         </md-list>
     </md-sidenav>
     <md-sidenav #end align="end" mode="side" opened="true">
-        <md-toolbar *ngIf="user.isRegistered()">
-            <span class="flex">Logged in as : {{user.Username}}</span>
+        <md-toolbar *ngIf="isUserRegistered()">
+            <span class="flex">Logged in as : {{_userService.user.Username}}</span>
             <span><button md-icon-button type="button" (click)="logout()"><md-icon>exit_to_app</md-icon></button></span>
         </md-toolbar>
-        <user-login [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()" *ngIf="!user.isRegistered()"></user-login>
-        <user-form [user]="user" [_rpc]="getRpcService()" [_cookieService]="getCookieService()"></user-form>
+        <user-login *ngIf="!isUserRegistered()"></user-login>
+        <user-form></user-form>
     </md-sidenav>
     <router-outlet ></router-outlet>
 </md-sidenav-layout>

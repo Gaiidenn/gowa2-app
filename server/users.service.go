@@ -34,7 +34,7 @@ func (us *UserService) Save(user *User, reply *User) error {
 			user.Email,
 			user.Password,
 			user.Age,
-			user.Username,
+			user.Gender,
 			user.Likes,
 			user.Meets,
 			rd,
@@ -55,7 +55,7 @@ func (us *UserService) Save(user *User, reply *User) error {
 			user.Email,
 			user.Password,
 			user.Age,
-			user.Username,
+			user.Gender,
 			user.Likes,
 			user.Meets,
 			)
@@ -81,7 +81,15 @@ func (us *UserService) Save(user *User, reply *User) error {
 	}
 	log.Println(users)
 	if len(users) > 0 {
-		*reply = users[0]
+		userTmp := users[0]
+		var s string
+		call := rpcCall{
+			method: "UsersService.updateList",
+			args: userTmp,
+			reply: &s,
+		}
+		h.broadcast <- &call
+		*reply = userTmp
 		return nil
 	}
 	return errors.New("prout")
@@ -103,7 +111,11 @@ func (us *UserService) Login(userLogin *User, user *User) error {
 	}
 	log.Println(users)
 	if len(users) > 0 {
-		*user = users[0]
+		userTmp := users[0]
+		if (userTmp.Password != userLogin.Password) {
+			return errors.New("wrong password")
+		}
+		*user = userTmp
 		return nil
 	}
 	return errors.New("unknown username")

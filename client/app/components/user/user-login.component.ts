@@ -6,6 +6,7 @@ import {MdToolbar} from '@angular2-material/toolbar';
 import {MdButton} from '@angular2-material/button';
 import {jsonrpcService} from '../jsonrpc/jsonrpc.service';
 import {User} from './user';
+import {UserService, UserLogin} from './user.service';
 
 @Component({
     selector: 'user-login',
@@ -19,17 +20,19 @@ import {User} from './user';
     ]
 })
 export class UserLoginComponent implements OnInit {
-    @Input()
-    private _rpc: jsonrpcService;
-    @Input()
-    private _cookieService: CookieService;
-    @Input()
-    user: User;
 
     userLogin: UserLogin = {
         Username: "",
         Password: ""
     };
+
+    constructor(
+        private _rpc: jsonrpcService,
+        private _cookieService: CookieService,
+        private _userService: UserService
+    ) {
+
+    }
 
     ngOnInit() {
         let username = this._cookieService.get("username");
@@ -43,29 +46,10 @@ export class UserLoginComponent implements OnInit {
 
     submit() {
         console.log("submit login!");
-        this._rpc.Call("UserService.Login", this.userLogin, this.submitResponse.bind(this));
-    }
-    submitResponse(result: any, error: any) {
-        if (error != null) {
-            console.log(error);
-            return;
-        }
-        console.log(JSON.stringify(result));
-        for (let attr in result) {
-            this.user[attr] = result[attr]
-        }
-        this._cookieService.put("username", this.user.Username);
-        this._cookieService.put("password", this.user.Password);
-        console.log(this.user);
-        console.log(this.user.isRegistered());
+        this._userService.login(this.userLogin);
     }
 
     valid(): boolean {
         return this.userLogin.Username.length >= 3 && this.userLogin.Password.length >= 3;
     }
-}
-
-interface UserLogin {
-    Username: string;
-    Password: string;
 }
