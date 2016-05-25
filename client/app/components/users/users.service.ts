@@ -10,7 +10,7 @@ export class UsersService  {
         private _rpc: jsonrpcService
     ) {
         this._rpc.Register("UsersService.updateList", this.updateList.bind(this));
-        this._rpc.Call("UserService.GetAll", "", this.setUsers.bind(this));
+        this._rpc.Call("UserRPCService.GetAll", "", this.setUsers.bind(this));
     }
 
     setUsers(users: Array<User>) {

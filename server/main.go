@@ -80,8 +80,8 @@ func validFileRequest(path string) bool {
 }
 
 func initRPCRegistration() {
-	userService := new(UserService)
-	rpc.Register(userService)
+	userRPCService := new(UserRPCService)
+	rpc.Register(userRPCService)
 }
 
 /*

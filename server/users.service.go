@@ -8,12 +8,8 @@ import (
 	ara "github.com/solher/arangolite"
 )
 
-// UserService for jsonRPC requests
-type UserService struct {
-}
-
 // Save the user in database
-func (us *UserService) Save(user *User, reply *User) error {
+func (user *User) Save() error {
 	if user.RegistrationDate.IsZero() {
 		user.RegistrationDate = time.Now()
 	}
@@ -81,23 +77,15 @@ func (us *UserService) Save(user *User, reply *User) error {
 	}
 	log.Println(users)
 	if len(users) > 0 {
-		userTmp := users[0]
-		var s string
-		call := rpcCall{
-			method: "UsersService.updateList",
-			args: userTmp,
-			reply: &s,
-		}
-		h.broadcast <- &call
-		*reply = userTmp
+		*user = users[0]
 		return nil
 	}
 	return errors.New("prout")
 }
 
 // Log the user in app
-func (us *UserService) Login(userLogin *User, user *User) error {
-	q := ara.NewQuery(`FOR user IN users FILTER user.Username == %q RETURN user`, userLogin.Username).Cache(true).BatchSize(500)
+func (user *User) Login() error {
+	q := ara.NewQuery(`FOR user IN users FILTER user.Username == %q RETURN user`, user.Username).Cache(true).BatchSize(500)
 	resp, err := db.Run(q)
 	if err != nil {
 		log.Println(err)
@@ -112,7 +100,7 @@ func (us *UserService) Login(userLogin *User, user *User) error {
 	log.Println(users)
 	if len(users) > 0 {
 		userTmp := users[0]
-		if (userTmp.Password != userLogin.Password) {
+		if (userTmp.Password != user.Password) {
 			return errors.New("wrong password")
 		}
 		*user = userTmp
@@ -121,22 +109,21 @@ func (us *UserService) Login(userLogin *User, user *User) error {
 	return errors.New("unknown username")
 }
 
-// Get all users from collection
-func (us *UserService) GetAll(_ *string, reply *[]User) error {
+// Get all Users from collection
+func (user *User) GetAll() (*[]User, error) {
 	q := ara.NewQuery(`FOR user IN users RETURN user`).Cache(true).BatchSize(500)
 	log.Println(q)
 	resp, err := db.Run(q)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 	var users []User
 	err = json.Unmarshal(resp, &users)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 	log.Println(users)
-	*reply = users
-	return nil
+	return &users, nil
 }

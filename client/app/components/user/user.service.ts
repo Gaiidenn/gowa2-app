@@ -17,7 +17,7 @@ export class UserService {
     }
 
     save() {
-        this._rpc.Call("UserService.Save", this.user, this.onSaveResponse.bind(this));
+        this._rpc.Call("UserRPCService.Save", this.user, this.onSaveResponse.bind(this));
     }
     onSaveResponse(result: any, error: any) {
         if (error != null) {
@@ -30,7 +30,7 @@ export class UserService {
     }
 
     login(userLogin: UserLogin) {
-        this._rpc.Call("UserService.Login", userLogin, this.loginResponse.bind(this));
+        this._rpc.Call("UserRPCService.Login", userLogin, this.loginResponse.bind(this));
     }
     loginResponse(result: any, error: any) {
         if (error != null) {
