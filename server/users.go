@@ -3,7 +3,6 @@ package main
 import (
 	//"log"
 	"time"
-	//ara "github.com/diegogub/aranGO"
 	ara "github.com/solher/arangolite"
 	//valid "github.com/asaskevich/govalidator"
 )
@@ -16,7 +15,7 @@ type User struct {
 	Password string `required:"-"`
 	Age int
 	Gender string `enum:"M,F"`
-	Likes []string // TODO Change for an array of key => value for "UserId" => bool (dislike option)
+	Likes []string // TODO: Change for an array of key => value for "UserId" => bool (dislike option)
 	Meets []string // Users already met
 	RegistrationDate time.Time
 }
