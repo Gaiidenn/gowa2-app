@@ -1,7 +1,3 @@
-// Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package main
 
 import (
@@ -9,31 +5,35 @@ import (
 	"log"
 	"net/http"
 	"net/rpc"
+	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
-
+	"encoding/json"
 	"golang.org/x/net/websocket"
 )
 
-var addr = flag.String("addr", ":8080", "http service address")
-var clientDir = flag.String("clientDir", "/../client", "client app directory")
-var homeTempl = template.Must(template.ParseFiles("../client/index.html"))
+type Configuration struct {
+	ClientPath string `json: "clientPath"`
+}
+var config = Configuration{}
 
-func serveIndex(w http.ResponseWriter, r *http.Request) {
+var addr *string
+var clientDir *string
+var homeTempl *template.Template
 
-	if validFileRequest(r.URL.Path) {
-		pwd, _ := os.Getwd()
-		filePath := pwd + *clientDir + r.URL.Path
-		http.ServeFile(w, r, filePath)
-		return
+func init() {
+	file, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		panic("Cannot open config file : " + err)
 	}
-	if r.Method != "GET" {
-		http.Error(w, "Method not allowed", 405)
-		return
+	err = json.Unmarshal(file, &config)
+	if err != nil {
+		panic("Cannot parse config file : " + err)
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	homeTempl.Execute(w, r.Host)
+	addr = flag.String("addr", ":8080", "http service address")
+	clientDir = flag.String("clientDir", config.ClientPath, "client app directory")
+	homeTempl = template.Must(template.ParseFiles(config.ClientPath + "/index.html"))
 }
 
 func main() {
@@ -58,6 +58,22 @@ func main() {
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+
+	if validFileRequest(r.URL.Path) {
+		pwd, _ := os.Getwd()
+		filePath := pwd + *clientDir + r.URL.Path
+		http.ServeFile(w, r, filePath)
+		return
+	}
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", 405)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	homeTempl.Execute(w, r.Host)
 }
 
 func validFileRequest(path string) bool {

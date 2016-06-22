@@ -4,6 +4,7 @@ client/node_modules/
 client/typings/
 client/app/**/*.js
 client/app/**/*.js.map
+.idea/
 
 # COMMON .gitignore CONFIG #
 ############################
