@@ -25,11 +25,11 @@ var homeTempl *template.Template
 func init() {
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
-		panic("Cannot open config file : " + err)
+		panic(err)
 	}
 	err = json.Unmarshal(file, &config)
 	if err != nil {
-		panic("Cannot parse config file : " + err)
+		panic(err)
 	}
 	addr = flag.String("addr", ":8080", "http service address")
 	clientDir = flag.String("clientDir", config.ClientPath, "client app directory")
